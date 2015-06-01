@@ -136,6 +136,7 @@ static NSString *const ARTimingEventLengthKey = @"length";
         NSAssert(asl_send(self.ASLClient, msg) == 0, @"Unable to send log message.");
         asl_free(msg);
     });
+    NSLog(@"%@", NSStringFromSelector(_cmd));
 }
 
 static NSString *
@@ -153,7 +154,7 @@ FormattedTimestampAndMessage(const char *seconds, const char *nsec, const char *
     dispatch_sync(self.loggingQueue, ^{
         char pid[6];
         sprintf(pid, "%lu", processID);
-
+        NSLog(@"%@", @(processID));
         aslmsg query = asl_new(ASL_TYPE_QUERY);
         asl_set_query(query, ASL_KEY_FACILITY, self.logFacility.UTF8String, ASL_QUERY_OP_EQUAL);
         asl_set_query(query, ASL_KEY_PID, pid, ASL_QUERY_OP_EQUAL);
@@ -170,6 +171,7 @@ FormattedTimestampAndMessage(const char *seconds, const char *nsec, const char *
         }
         asl_free(query);
     });
+    NSLog(@"messages count: %@", @(messages.count));
     return [messages copy];
 }
 

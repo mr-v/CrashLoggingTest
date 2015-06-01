@@ -14,6 +14,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [ARAnalytics setupHockeyAppWithBetaID:@"fd08680f19ccebdf4dab0dcbdefc29ec"];
+    ARLog(@"proccess id: %i", [NSProcessInfo processInfo].processIdentifier);
     return YES;
 }
 
