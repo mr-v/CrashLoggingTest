@@ -3,10 +3,11 @@ PODS:
   - ARAnalytics/HockeyApp (3.3.0):
     - ARAnalytics/CoreIOS
     - HockeySDK
-  - HockeySDK (3.6.4)
+  - HockeySDK (HEAD based on 3.6.4)
 
 DEPENDENCIES:
   - ARAnalytics/HockeyApp
+  - HockeySDK (HEAD)
 
 SPEC CHECKSUMS:
   ARAnalytics: 0402b256077cf9b83348487fa0dc361ad17775d2

@@ -2,7 +2,7 @@
 # platform :ios, '6.0'
 
 target 'CrashLoggingTest' do
-# pod 'HockeySDK', :head
+pod 'HockeySDK', :head
 pod 'ARAnalytics/HockeyApp'
 end
 

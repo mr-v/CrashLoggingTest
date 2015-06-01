@@ -734,6 +734,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
       if (userProvidedMetaData)
         [self persistUserProvidedMetaData:userProvidedMetaData];
       
+      [self approveLatestCrashReport];
       [self sendNextCrashReport];
       return YES;
       
@@ -748,6 +749,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
       if (userProvidedMetaData)
         [self persistUserProvidedMetaData:userProvidedMetaData];
       
+      [self approveLatestCrashReport];
       [self sendNextCrashReport];
       return YES;
       
@@ -820,6 +822,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
                                                                              osVersion:report.systemInfo.operatingSystemVersion
                                                                                osBuild:report.systemInfo.operatingSystemBuild
                                                                               appBuild:report.applicationInfo.applicationVersion
+                                                                  appProcessIdentifier:report.processInfo.processID
                                     ];
 
         // fetch and store the meta data after setting _lastSessionCrashDetails, so the property can be used in the protocol methods
@@ -907,6 +910,12 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
 
 #pragma mark - Crash Report Processing
 
+// store the latest crash report as user approved, so if it fails it will retry automatically
+- (void)approveLatestCrashReport {
+  [_approvedCrashReports setObject:[NSNumber numberWithBool:YES] forKey:[_crashesDir stringByAppendingPathComponent: _lastCrashFilename]];
+  [self saveSettings];
+}
+
 - (void)triggerDelayedProcessing {
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(invokeDelayedProcessing) object:nil];
   [self performSelector:@selector(invokeDelayedProcessing) withObject:nil afterDelay:0.5];
@@ -950,6 +959,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
     }
 
     if (!BITHockeyBundle() || bit_isRunningInAppExtension()) {
+      [self approveLatestCrashReport];
       [self sendNextCrashReport];
     } else if (_crashManagerStatus != BITCrashManagerStatusAutoSend && notApprovedReportFilename) {
       
@@ -987,6 +997,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
         [alertView show];
       }
     } else {
+      [self approveLatestCrashReport];
       [self sendNextCrashReport];
     }
   }
@@ -1199,6 +1210,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
                                                                        osVersion:fakeReportOSVersion
                                                                          osBuild:fakeReportOSBuild
                                                                         appBuild:fakeReportAppVersion
+                                                            appProcessIdentifier:[[NSProcessInfo processInfo] processIdentifier]
                               ];
 
   NSData *plist = [NSPropertyListSerialization dataWithPropertyList:(id)rootObj
@@ -1230,6 +1242,7 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
   NSString *crashXML = nil;
   BITHockeyAttachment *attachment = nil;
   
+  // we start sending always with the oldest pending one
   NSString *filename = [_crashFiles objectAtIndex:0];
   NSString *cacheFilename = [filename lastPathComponent];
   NSData *crashData = [NSData dataWithContentsOfFile:filename];
@@ -1350,11 +1363,6 @@ static PLCrashReporterCallbacks plCrashCallbacks = {
                 useremail,
                 installString,
                 [description stringByReplacingOccurrencesOfString:@"]]>" withString:@"]]" @"]]><![CDATA[" @">" options:NSLiteralSearch range:NSMakeRange(0,description.length)]];
-    
-    // store this crash report as user approved, so if it fails it will retry automatically
-    [_approvedCrashReports setObject:[NSNumber numberWithBool:YES] forKey:filename];
-
-    [self saveSettings];
     
     BITHockeyLog(@"INFO: Sending crash reports:\n%@", crashXML);
     [self sendCrashReportWithFilename:filename xml:crashXML attachment:attachment];
