@@ -1,0 +1,15 @@
+PODS:
+  - ARAnalytics/CoreIOS (3.3.0)
+  - ARAnalytics/HockeyApp (3.3.0):
+    - ARAnalytics/CoreIOS
+    - HockeySDK
+  - HockeySDK (3.6.4)
+
+DEPENDENCIES:
+  - ARAnalytics/HockeyApp
+
+SPEC CHECKSUMS:
+  ARAnalytics: 0402b256077cf9b83348487fa0dc361ad17775d2
+  HockeySDK: c07cdd580296737edcd0963e292c19885a53f563
+
+COCOAPODS: 0.37.2

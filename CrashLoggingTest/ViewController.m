@@ -7,14 +7,11 @@
 //
 
 #import "ViewController.h"
-
-@interface ViewController ()
-
-@end
+#import <ARAnalytics/ARAnalytics.h>
 
 @implementation ViewController
 - (IBAction)log:(id)sender {
-    NSLog(@"%@", [NSDate date]);
+    ARLog(@"%@", [NSDate date]);
 }
 
 - (IBAction)crash:(id)sender {
